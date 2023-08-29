@@ -1,0 +1,18 @@
+\documentclass[convert={density=600, outext=.png}, multi=circuitikz]{standalone}
+\usepackage{eecstex}
+
+\begin{document}
+
+\color{blue}\begin{circuitikz}\draw
+  (0, 0) node[ocirc, label=left:{\(V_{{in}}\)}]{} to[R, l=\qty{10}{\kilo\ohm}] ++(2, 0) coordinate[label=above:{\(V_{in, div}\)}](v_in_div){} to[C, l=\(C_{in}\)] ++(2, 0) coordinate(c_in)
+  (v_in_div) to[R, l=\qty{100}{\ohm}] ++(0, -2) node[ground]{}
+  (c_in) to[R, l=\(R_{g2}\)] ++(0, -2) node[ground]{}
+  (c_in) to[short] ++(2, 0) to[R, l={\(R_{g1}\)}] ++(0, -2) node[ground]{}
+  (c_in) ++ (2, 0) to[short] ++(2, 0) node[ocirc]{} to[open, v=\(v_{gs}\)] ++(0, -2) coordinate(s) node[ocirc]{}
+  (s) to[short] ++(4, 0) to[cI, l={\(g_{m} v_{gs}\)}, invert] ++(0, 2) coordinate(d) to[short] ++(2, 0) to[R, l=\(R_{d}\)] ++(0, -2) node[ground]{}
+  (d) ++ (2, 0) to[short] ++(2, 0) to[C, l=\(C_{L}\)] ++(0, -2) node[ground]{}
+  (s) ++ (2, 0) to[R, l=\(R_{S}\)] ++(0, -2) node[ground]{}
+  (s) ++ (4, 0) to[C, l=\(C_{S}\)] ++(0, -2) node[ground]{}
+;\end{circuitikz}
+
+\end{document}

@@ -1,0 +1,235 @@
+\documentclass{article}
+\usepackage{../cs170}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\AtBeginDocument{\RenewCommandCopy\qty\SI}
+
+\def\title{HW 02}
+
+\begin{document}
+
+\maketitle
+
+\question{}
+
+\begin{center}
+    \begin{circuitikz}
+        \draw (0, 0) node[ground]{} to[sV, l=\(V_s\)] (0, 2) to[R, l=\(R\)] (2, 2) to[L, l=\(L\)] (2, 0) node[ground]{};
+        \draw (2, 2) to[short] (3, 2) node[ocirc]{\(V_o\)}
+    ;\end{circuitikz}
+\end{center}
+
+\begin{subparts}
+    \item The differential equation governing the circuit is
+    \begin{align}
+        V_s(t) - I_L(t) R - L \dv{I_L}{t} &= 0 \\
+        \implies \dv{I_L}{t} + \frac{R}{L} I_L(t) &= \frac{1}{L} V_s(t)
+    \end{align}
+    The homogeneous solution to the differential equation is
+    \begin{equation}
+        I_{L, h}(t) = A_h e^{-\frac{R}{L} t}
+    \end{equation}
+    Assuming the particular solution is of the form \(A_p e^{bt}\), we have
+    \begin{equation}
+        A_p be^{bt} + \frac{R}{L} A_p e^{bt} = \frac{1}{L} u(t)
+    \end{equation}
+    Pattern matching, we find that \(b = 0\), and \(A_p = \frac{1}{R} u(t)\), so our particular solution is
+    \begin{equation}
+        I_{L, p}(t) = \frac{1}{R} u(t)
+    \end{equation}
+    The final solution is
+    \begin{align}
+        I_L(t) &= I_{L, h}(t) + I_{L, p}(t) = \frac{1}{R} u(t) + A_h e^{-\frac{R}{L} t} \\
+        I_L(0) &= 0 = \frac{1}{R} + A_h \implies A_h = -\frac{1}{R} u(t)
+    \end{align}
+    The final equation is
+    \begin{align}
+        I_L(t) &= \frac{1}{R} (1 - e^{-\frac{R}{L} t}) u(t) \\
+        V_o(t) &= L \dv{I_L}{t} = \cancelto{0}{\frac{L}{R} (1 - e^{-\frac{R}{L} t}) \delta(t)} + e^{-\frac{R}{L} t} u(t)
+    \end{align}
+    The impulse response, by definition, is
+    \begin{equation}
+        h(t) = \dv{\Phi_o}{t} = \cancelto{1}{e^{-\frac{R}{L} t}} \delta(t) - \frac{R}{L} e^{-\frac{R}{L} t} u(t) = \delta(t) - \frac{R}{L} e^{-\frac{R}{L} t} u(t)
+    \end{equation}
+    Assuming \(V_s = \qty{1}{\volt}\), \(R = \qty{1}{\ohm}\), \(L = \qty{1}{\henry}\),
+    \begin{center}
+        \begin{tikzpicture}
+            \begin{axis}[
+                xlabel = {\(t [\unit{\second}]\)},
+                ylabel = {\(V_o [\unit{\volt}]\)},
+                xmin = 0, xmax = 5,
+                ymin = -1, ymax = 1,
+            ]
+                \addplot[
+                domain = 0:5,
+                samples = 100,
+                color = blue
+                ]
+                {exp(-x)};
+                \addlegendentry{\(V_s(t) = V_s u(t)\)}
+
+                \addplot[
+                domain = 0:5,
+                samples = 100,
+                color = red
+                ]
+                {-exp(-x)};
+                \addlegendentry{\(V_s(t) = \Phi_s \delta(t)\)}
+            \end{axis}
+        \end{tikzpicture}
+    \end{center}
+    \item Finding the particular solution for the frequency response, we have
+    \begin{equation}
+        A be^{bt} + \frac{R}{L} A e^{bt} = \frac{1}{L} V_s e^{j \omega t}
+    \end{equation}
+    Pattern matching, we find that \(b = j \omega\), and \(A = \frac{V_s}{R + j \omega L}\).
+    The final equation is
+    \begin{align}
+        I_L(t) &= \frac{V_s}{R + j \omega L} e^{j \omega t} \\
+        V_o(t) &= L \dv{I_L}{t} = \frac{V_s L}{R + j \omega L} j \omega e^{j \omega t} \\
+        &= \frac{V_s e^{j \omega t}}{R + j \omega L} (j \omega L) \implies \frac{V_o(t)}{V_s(t)} = \frac{j \omega L}{R + j \omega L} \\
+        \left|\frac{V_o(t)}{V_s(t)}\right| &= \frac{\omega L}{\sqrt{R^2 + (\omega L)^2}} \\
+        \angle \frac{V_o(t)}{V_s(t)} &= \tan^{-1}\left(\frac{R}{\omega L}\right)
+    \end{align}
+    This is a high-pass filter since \(\lim_{\omega \to 0} |H(\omega)| = 0\) and \(\lim_{\omega \to \infty} |H(\omega)| = 1\).
+\end{subparts}
+
+\question{}
+
+\begin{subparts}
+    \item \begin{equation}
+        F(s) = \int_{\R^+} 7t^2 e^{-st} \, \dd{t}
+    \end{equation}
+    By tabular integration, we have
+    \begin{equation}
+        \begin{array}{c|c}
+            u & v \\
+            \hline
+            7t^2 & e^{-st} \\
+            14t & -\frac{1}{s} e^{-st} \\
+            14 & \frac{1}{s^2} e^{-st} \\
+            0 & -\frac{1}{s^3} e^{-st}
+        \end{array}
+    \end{equation}
+    So the final integral is
+    \begin{equation}
+        F(s) = \eval{-\frac{7t^2 e^{-st}}{s} - \frac{14t e^{-st}}{s^2} - \frac{14 e^{-st}}{s^3}}_0^\infty = \frac{14}{s^3}
+    \end{equation}
+    where the integral converges when \(\Re\{s\} > 0\).
+    \item \begin{align}
+        F(s) &= \int_{\R^+} 3e^{-2t} \cos(5t) e^{-st} \, \dd{t} \\
+        &= \int_{\R^+} 3e^{-2t} \left(\frac{e^{j 5t} + e^{-j 5t}}{2}\right) e^{-st} \, \dd{t} \\
+        &= \frac{3}{2} \int_{\R^+} e^{(-2 - s + 5j) t} + e^{(-2 - s - 5j) t} \, \dd{t} \\
+        &= \frac{3}{2} \left(\eval{\frac{1}{-2 - s + 5j} e^{(-2 - s + 5j) t} + \frac{1}{-2 - s - 5j} e^{(-2 - s - 5j) t}}_0^\infty\right) \\
+        &= \frac{3}{2} \left(\frac{1}{2 + s + 5j} + \frac{1}{2 + s - 5j}\right) \\
+        &= \frac{3}{2} \left(\frac{2 + s - 5j + 2 + s + 5j}{(2 + s)^2 + 25}\right) = 3 \left(\frac{2 + s}{(2 + s)^2 + 25}\right)
+    \end{align}
+    where the integral converges when \(\Re\{s\} > 2\).
+\end{subparts}
+
+\question{}
+
+\begin{subparts}
+    \item \begin{align}
+        F(s) &= \frac{1}{s - 1} + \frac{4}{(s - 3)^2} + \frac{7}{(s - 5)^3} \\
+        &= \frac{0!}{(s - 1)^1} + \frac{4}{1!} \frac{1!}{(s - 3)^2} + \frac{7}{2!} \frac{2!}{(s - 5)^3}
+    \end{align}
+    Using the Laplace transform pair \(t^n e^{-\alpha t} \iff \frac{n!}{(s + \alpha)^{n + 1}}\), we get
+    \begin{equation}
+        f(t) = e^t + 4t e^{3t} + \frac{7}{2} t^2 e^{5t}
+    \end{equation}
+    \item \begin{equation}
+        F(s) = \frac{(s + 3) + 8}{(s + 3)^2 + 4} = \frac{s + 3}{(s + 3)^2 + 4} + 4 \frac{2}{(s + 3)^2 + 4}
+    \end{equation}
+    Using the Laplace transform pairs \(e^{-\alpha t} \sin(\omega t) \iff \frac{\omega}{(s + \alpha)^2 + \omega^2}\) and \(e^{-\alpha t} \cos(\omega t) \iff \frac{s + \alpha}{(s + \alpha)^2 + \omega^2}\), we get
+    \begin{equation}
+        f(t) = e^{-3t} \cos(2t) + 4e^{-3t} \sin(2t)
+    \end{equation}
+    \item \begin{align}
+        F(s) &= \frac{1}{(s + 2) (s + 4)} = \frac{A}{s + 2} + \frac{B}{s + 4} \\
+        \implies 1 &= A (s + 4) + B (s + 2)
+    \end{align}
+    Plugging in \(s = -4\) and \(s = -2\), we get \(A = \frac{1}{2}\) and \(B = -\frac{1}{2}\), respectively.
+    We then get
+    \begin{equation}
+        F(s) = \frac{1}{2} \frac{1}{s + 2} - \frac{1}{2} \frac{1}{s + 4}
+    \end{equation}
+    Using the Laplace transform pair \(e^{-\alpha t} \iff \frac{1}{s + \alpha}\),
+    \begin{equation}
+        f(t) = \frac{1}{2} e^{-2t} - \frac{1}{2} e^{-4t}
+    \end{equation}
+\end{subparts}
+
+\question{}
+
+\begin{center}
+    \begin{circuitikz}
+        \draw (0, 0) node[ground]{} to[I, l=\(I_1 u(t)\)] (0, 2) to[short] (4, 2) to[R, l=\(R\)] (6, 2) to[V, l=\(V_1\)] (6, 0) node[ground]{};
+        \draw (3, 2) to[I, l_=\(Q_1 \delta(t - t_0)\)] (3, 0) node[ground]{};
+        \draw (4, 2) to[C, l=\(C\)] (4, 0) node[ground]{};
+    \end{circuitikz}
+\end{center}
+Using superposition, we find \(V_c(t)\) considering only \(I_1 u(t)\):
+\begin{center}
+    \begin{circuitikz}
+        \draw (0, 0) node[ground]{} to[I, l=\(I_1 u(t)\)] (0, 2) to[short] (4, 2) to[R, l=\(R\)] (6, 2) to[short] (6, 0) node[ground]{};
+        \draw (4, 2) to[C, l=\(C\)] (4, 0) node[ground]{};
+    \end{circuitikz}
+\end{center}
+The initial condition is \(V_c(0) = 0\).
+The homogeneous solution is \(V_c(t) = A_h e^{-\frac{t}{RC}}\).
+The particular solution governing the circuit is
+\begin{align}
+    \frac{I_1}{C} u(t) &= \dv{V_c}{t} + \frac{1}{RC} V_c(t) \\
+    \frac{I_1}{C} u(t) &= A_p b e^{bt} + \frac{A_p}{RC} e^{bt} \\
+    \implies V_c(t) &= I_1 R u(t) \\
+    \implies V_c(t) &= I_1 R (1 - e^{-\frac{t}{RC}}) u(t)
+\end{align}
+Finding \(V_c(t)\) considering only \(Q_1 \delta(t - t_0)\):
+\begin{center}
+    \begin{circuitikz}
+        \draw (3, 2) to[short] (4, 2);
+        \draw (4, 2) to[R, l=\(R\)] (6, 2);
+        \draw (6, 2) to[short] (6, 0) node[ground]{};
+        \draw (3, 2) to[I, l_=\(Q_1 \delta(t - t_0)\)] (3, 0) node[ground]{};
+        \draw (4, 2) to[C, l=\(c\)] (4, 0) node[ground]{};
+    \end{circuitikz}
+\end{center}
+The initial condition is \(V_c(t_0) = 0\).
+Taking the Laplace transform,
+\begin{center}
+    \begin{circuitikz}
+        \draw (0, 0) node[ground]{} to[I, l=\(Q_1 e^{-t_0 s}\), invert] (0, 2) to[short] (2, 2) to[generic, l=\(Z\), a=\(\frac{R}{1 + sRC}\)] (2, 0) node[ground]{};
+    \end{circuitikz}
+\end{center}
+By Ohm's law, we get
+\begin{equation}
+    V(s) = -\frac{QR e^{-t_0 s}}{\frac{1}{RC} + sRC} = -\frac{\frac
+    {Q}{C} e^{-t_0 s}}{\frac{1}{RC} + s} \overset{\mathcal{L}^{-1}}{\implies} V_c(t) = -\frac{Q}{C} e^{-\frac{t - t_0}{RC}} u(t - t_0)
+\end{equation}
+% The homogeneous solution is \(V_c(t) = A_h e^{-\frac{t}{RC}}\).
+% The particular solution governing the circuit is
+% \begin{align}
+%     -\frac{Q_1}{C} \delta(t - t_0) &= \dv{V_c}{t} + \frac{1}{RC} V_c(t) \\
+%     -\frac{Q_1}{C} \delta(t - t_0) &= A_p b e^{bt} + \frac{A_p}{RC} e^{bt} \\
+%     \implies V_c(t) &= -Q_1 R \delta(t - t_0) \\
+%     \implies V_c(t) &= -Q_1 R (1 - e^{-\frac{t}{RC}}) \delta(t - t_0)
+% \end{align}
+Finding \(V_c(t)\) considering only \(V_1\):
+\begin{center}
+    \begin{circuitikz}
+        \draw (4, 2) to[R, l=\(R\)] (6, 2) to[V, l=\(V_1\)] (6, 0) node[ground]{};
+        \draw (4, 2) to[C, l=\(C\)] (4, 0) node[ground]{};
+    \end{circuitikz}
+\end{center}
+Since \(V_1\) is a constant, \(V_c(t) = V_1\) is at steady state.
+The final equation for the circuit is
+\begin{equation}
+    V_c(t) = I_1 R (1 - e^{-\frac{t}{RC}}) u(t) - \frac{Q}{C} e^{-\frac{t - t_0}{RC}} u(t - t_0) + V_1
+\end{equation}
+Assuming \(I_1 = \qty{1}{\ampere}\), \(Q_1 = \qty{1}{\coulomb}\), \(C = \qty{1}{\farad}\), \(R = \qty{1}{\ohm}\), \(V_1 = \qty{1}{\volt}\), and \(t_0 = \qty{2}{\second}\),
+\begin{center}
+    \resizebox{0.8\textwidth}{!}{\input{q3.pgf}}
+\end{center}
+
+\end{document}

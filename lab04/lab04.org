@@ -1,0 +1,32 @@
+#+title: Lab04
+
+#+begin_src python :session
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+#+end_src
+
+#+RESULTS:
+
+* Half-Bridge Rectifier
+
+#+begin_src python :session :results file
+t = np.linspace(0, 5e-2, num=500)
+y = 2 * np.sin(2 * np.pi * 60 * t)
+_, ax = plt.subplots(figsize=(10, 5))
+ax.plot(t, (y - 0.7) * (y >= 0.7))
+ax.axhline(1.3, color="tab:gray", linestyle="--")
+ax.axvline(0.0075, color="tab:gray", linestyle="--")
+ax.text(2e-2, 1.35, "$\max\{V_o(t)\} - V_{th}$")
+ax.text(8e-3, 0.8, r"$\approx k \frac{\pi}{\omega}$")
+ax.set_ylim(-0.1, 1.5)
+ax.set_xlabel("$t$ [s]")
+ax.set_ylabel("$V_o(t)$")
+
+fname = "q_2_2.png"
+plt.savefig(fname)
+fname
+#+end_src
+
+#+results:
+[[file:q_2_2.png]]

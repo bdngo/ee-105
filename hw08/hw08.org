@@ -1,0 +1,102 @@
+#+title: HW 08
+
+#+begin_src python :session
+import os
+
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
+matplotlib.use("pgf")
+matplotlib.rcParams.update({
+    "pgf.texsystem": "lualatex",
+    'font.family': 'serif',
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+})
+#+end_src
+
+#+RESULTS:
+: None
+
+* Question 1
+
+#+begin_src python :session :results file
+x = np.linspace(-1, 1, num=100)
+
+fig, (accumulation, depletion, inversion) = plt.subplots(3, 1, sharex=True)
+fig.supxlabel("Distance")
+fig.supylabel("Charge [C]")
+
+accumulation.stem(-0.5, 2, markerfmt="b^")
+accumulation.stem(0, -2, markerfmt="bv")
+
+depletion.stem(-0.5, -2, markerfmt="bv")
+depletion.plot(x, np.piecewise(x, [(0 <= x) & (x < 0.5)], [1, 0]))
+
+inversion.stem(-0.5, -2, markerfmt="bv")
+inversion.stem(0, 2, markerfmt="b^")
+inversion.plot(x, np.piecewise(x, [(0 <= x) & (x < 0.5)], [1, 0]))
+
+fname = "q1-charge.pgf"
+plt.savefig(fname)
+fname
+#+end_src
+
+#+RESULTS:
+[[file:q1-charge.pgf]]
+
+#+begin_src python :session :results file
+C_ox = 1
+V_fb = -0.5
+V_t = 0.5
+v = np.linspace(-1, 1, num=100)
+
+_, ax = plt.subplots(1, 1)
+ax.set_xlabel("Voltage [V]")
+ax.set_ylabel("Capacitance [F]")
+ax.plot(v, np.piecewise(v, [(V_fb <= v) & (v < V_t)], [lambda x: (-x - V_t) * (-x - V_t), C_ox]))
+
+fname = "q1-cv.pgf"
+plt.savefig(fname)
+fname
+#+end_src
+
+#+RESULTS:
+[[file:q1-cv.pgf]]
+
+* Question 2
+
+#+begin_src python :session :results file
+C_ox = 6.9e-3
+V_fb = -0.467
+V_t = 0.247
+v = np.linspace(-1, 1, num=500)
+
+fig, (cv, qv) = plt.subplots(2, 1, sharex=True)
+fig.supxlabel("Voltage[V]")
+
+cv.set_ylabel("Capacitance [F]")
+cv.plot(v, np.piecewise(v, [(V_fb <= v) & (v < V_t)], [lambda x: 2 * C_ox * (x - V_t) * (x - V_t), C_ox]))
+
+qv.set_ylabel("Charge [C]")
+qv.plot(v, np.piecewise(v,
+                        [
+                            v < V_fb,
+                            (V_fb <= v) & (v < V_t),
+                            V_t <= v
+                        ],
+                        [
+                            lambda x: 10 * C_ox * (x - V_fb),
+                            lambda x: 5 * C_ox * np.sqrt(x - V_fb),
+                            lambda x: 10 * C_ox * (x - V_t) + 0.03
+                        ]
+                        ))
+
+fname = "q2-ef.pgf"
+plt.savefig(fname)
+fname
+#+end_src
+
+#+RESULTS:
+[[file:q2-ef.pgf]]

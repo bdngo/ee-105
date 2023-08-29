@@ -1,0 +1,156 @@
+\documentclass{article}
+\usepackage{../cs170}
+\AtBeginDocument{\RenewCommandCopy\qty\SI}
+
+\def\title{HW 05}
+
+\begin{document}
+
+\maketitle
+
+\question{}
+
+\begin{center}
+    \begin{circuitikz}\draw
+        (0, 0) node[op amp](oa1){}
+        (oa1.+) to[V, l=\(V_{\text{bias}}\)] ++(0, -2) node[ground]{}
+        (oa1.-) to[C, l_=\(C_1\)] ++(-2, 0) to[R, l_=\(R_s\)] ++(-2, 0) to[sV, v=\(V_i\)] ++(0, -2) node[ground]{}
+        (oa1.-) to[open] ++(0, 1) node[](c1){} to[C, l=\(C_2\)] (c1 -| oa1.out)
+        (oa1.-) to[short] ++(0, 3) node[](r1){} to[R, l=\(R_1\)] (r1 -| oa1.out) to[short] (oa1.out)
+        (oa1.out)++(2, -0.5) node[op amp, noinv input up](oa2){}
+        (oa1.out) to[short] (oa2.+)
+        (oa2.-) to[short] ++(0, -1) coordinate(fb) to[R, l=\(R_2\)] ++(0, -2) node[ground]{}
+        (fb) to[C, l=\(C_3\)] (fb -| oa2.out) to[short] (oa2.out) to[short] ++(1, 0) node[ocirc, label=right:\(V_o\)]{}
+    ;\end{circuitikz}
+\end{center}
+In the \(s\)-domain,
+\begin{center}
+    \begin{circuitikz}\draw
+        (0, 0) node[op amp](oa1){}
+        (oa1.+) to[V, l=\(V_{\text{bias}} \delta(s)\)] ++(0, -2) node[ground]{}
+        (oa1.-) to[generic, l_=\(R_s + \frac{1}{s C_1}\)] ++(-2, 0) to[sV, v=\(V_i(s)\)] ++(0, -2) node[ground]{}
+        (oa1.-) to[short] ++(0, 1) node[](c1){} to[generic, l=\(\frac{R_1}{1 + s R_1 C_2}\)] (c1 -| oa1.out) to[short] (oa1.out)
+        (oa1.out)++(2, -0.5) node[op amp, noinv input up](oa2){}
+        (oa1.out) to[short] (oa2.+)
+        (oa2.-) to[short] ++(0, -1) coordinate(fb) to[generic, l=\(R_2\)] ++(0, -2) node[ground]{}
+        (fb) to[generic, l=\(\frac{1}{s C_3}\)] (fb -| oa2.out) to[short] (oa2.out) to[short] ++(1, 0) node[ocirc, label=right:\(V_o(s)\)]{}
+    ;\end{circuitikz}
+\end{center}
+Using superposition, we can derive the output of the first op-amp as
+\begin{align}
+    V_x(s) &= -V_i(s) \frac{\frac{R_1}{1 + s R_1 C_2}}{\frac{1 + s R_s C_1}{s C_1}} + V_{\text{bias}} \delta(s) \left(1 + \frac{\frac{R_1}{1 + s R_1 C_2}}{\frac{1 + s R_s C_1}{s C_1}}\right) \\
+    &= -V_i(s) \frac{s R_1 C_1}{(1 + s R_1 C_2) (1 + s R_s C_1)} + V_{\text{bias}} \delta(s) \left(1 + \frac{s R_1 C_1}{(1 + s R_1 C_2) (1 + s R_s C_1)}\right)
+\end{align}
+We can then multiply by the second op-amp's transfer function to get
+\begin{align}
+    V_o(s) &= V_x \left(1 + \frac{1}{s R_2 C_3}\right) \\
+           &= \left(-V_i(s) \frac{s R_1 C_1}{(1 + s R_1 C_2) (1 + s R_s C_1)} + \cancelto{0}{V_{\text{bias}}} \delta(s) \left(1 + \frac{s R_1 C_1}{(1 + s R_1 C_2) (1 + s R_s C_1)}\right)\right) \left(1 + \frac{1}{s R_2 C_3}\right) \\
+    \implies \frac{V_o(s)}{V_i(s)} &= -\frac{s R_1 C_1}{(1 + s R_1 C_2) (1 + s R_s C_1)} \left(1 + \frac{1}{s R_2 C_3}\right)
+\end{align}
+
+\question{}
+
+\begin{center}
+    \begin{circuitikz}\draw
+        (0, 0) node[op amp](oa){}
+        (oa.-) to[R, l_=\(R_s\)] ++(-2, 0) to[sV, l_=\(V_i\)] ++(0, -2) node[ground]{}
+        (oa.+) to[short] ++(0, -1) node[ground]{}
+        (oa.-) to[short] ++(0, 1) coordinate(c1) to[C, l=\(C_1\)] (c1 -| oa.out) to[short] (oa.out) to[short] ++(1, 0) node[ocirc, label=right:\(V_o\)]{}
+    ;\end{circuitikz}
+\end{center}
+
+\begin{subparts}
+    \item Applying a test voltage at the input, the current through \(R_s\) is \(I_{test} = \frac{V_{test} - \cancelto{0}{V^-}}{R_s}\), where we use the ideality of the op amp to cancel out \(V^-\).
+    This means that \(Z_{test} = \frac{V_{test}}{I_{test}} = R_s\).
+    Applying a test voltage at the output, since we are applying a DC source, the voltage difference at the capacitor is \(0\) due to the virtual short, therefore we have \(Z_{out} = 0\).
+    \item The circuit in the \(s\)-domain is now
+    \begin{center}
+        \begin{circuitikz}\draw
+            (0, 0) node[ground]{} to[sV, l=\(V_{test}\), i^>=\(I_{test}\)] ++(0, 2) to[generic, l=\(R_s\)] ++(2, 0) coordinate(u1) to[open, v<=\(V_{in}\)] ++(0, -2) node[ground]{}
+            (5, 0) node[ground]{} to[cV, l=\(A V_{in}\), invert] ++(0, 2) to[generic, l=\(R_{out}\)] ++(2, 0) coordinate(u2) to[short] ++(1, 0) node[ocirc, label=right:\(V_o\)]{}
+            (u1) to[short] ++(0, 1) coordinate(u3) to[generic, l=\(\frac{1}{s C_1}\)] (u3 -| u2) to[short] (u2)
+        ;\end{circuitikz}
+    \end{center}
+    We can create the loop equation
+    \begin{align}
+        V_{test} - I_{test} R_s - I_{test} \frac{1}{s C_1} - I_{test} R_{out} + A (V_{test} - I_{test} R_s) &= 0 \\
+        V_{test} (1 + A) - I_{test} \left(R_s + \frac{1}{s C_1} - R_{out} - A R_s\right) &= 0 \\
+        Z_{in} = \frac{V_{test}}{I_{test}} &= \frac{R_s + \frac{1}{s C_1} - R_{out} - A R_s}{1 + A}
+    \end{align}
+    For the output impedance, we can apply a test voltage at \(V_o\) and null \(V_i\) to get
+    \begin{center}
+        \begin{circuitikz}\draw
+            (0, 0) node[ground]{} to[short] ++(0, 2) to[generic, l=\(R_s\)] ++(2, 0) coordinate(u1) to[open, v<=\(V_{in}\)] ++(0, -2) node[ground]{}
+            (5, 0) node[ground]{} to[cV, l=\(A V_{in}\), invert] ++(0, 2) to[generic, l=\(R_{out}\), i^<=\(I_2\)] ++(2, 0) coordinate(u2) to[short] ++(1, 0) node[circ, label=right:\(V_o\)]{} coordinate(vo)
+            (u1) to[short] ++(0, 1) coordinate(u3) to[generic, l=\(\frac{1}{s C_1}\)] (u3 -| u2) to[short, i<=\(I_1\)] (u2)
+            (vo) to[sV, l=\(V_{test}\), i=\(I_{test}\)] ++(0, -2) node[ground]{}
+        ;\end{circuitikz}
+    \end{center}
+    We can obtain the node equations
+    \begin{align}
+        I_{test} &= \frac{V_{test} - A V_{in}}{R_{out}} + s C_1 (V_{test} + V_{in}) \\
+        V_{in} &= V_{test} - s R_s C_1 (V_{test} + V_{in}) \\
+        \implies V_{in} &= V_{test} \frac{1 - s R_s C_1}{1 + s R_s C_1} \\
+        I_{test} &= V_{test} \left(\frac{1}{R_{out}} - \frac{A}{R_{out}} \frac{1 - s R_s C_1}{1 + s R_s C_1} + sC_1 \left(1 + \frac{1 - s R_s C_1}{1 + s R_s C_1}\right)\right) \\
+        \implies \frac{1}{Z_{out}} &= \left(\frac{1}{R_{out}} - \frac{A}{R_{out}} \frac{1 - s R_s C_1}{1 + s R_s C_1} + sC_1 \left(1 + \frac{1 - s R_s C_1}{1 + s R_s C_1}\right)\right)
+    \end{align}
+    When \(A \to \infty\), we have \(G_{out} = \infty \implies Z_{out} = 0\) and \(Z_{in} = R_s\).
+    \item The answer can be obtained similarly by substituting the constant gain \(A\) with the gain \(\frac{A}{1 + j \frac{\omega}{\omega_0}}\).
+\end{subparts}
+
+\question{}
+
+\begin{center}
+    \begin{circuitikz}\draw
+        (0, 0) node[op amp](oa){}
+        (oa.+) to[short] ++(-1, 0) to[R, l=\qty{1}{\kilo\ohm}] ++(-2, 0) to[sV, l_=\(V_i\)] ++(0, -2) node[ground]{}
+        (oa.+)++(-1, 0) to[I, l=\qty{0.1}{\milli\ampere}, invert] ++(0, -2) node[ground]{}
+        (oa.-) to[short] ++(-1, 0) to[V, l_=\qty{0.1}{\volt}, invert] ++(-2, 0) to[short] ++(0, 3) coordinate(fb) to[R, l=\qty{2}{\kilo\ohm}] (fb -| oa.out) to[short] (oa.out)
+        (fb) to[R, l=\qty{1}{\kilo\ohm}] ++(-2, 0) node[ground]{}
+        (oa.-)++(-1, 0) to[I, l_=\qty{0.2}{\milli\ampere}, invert] ++(0, 2) node[ground, rotate=180]{}
+        (oa.out) to[short] ++(1, 0) node[ocirc, label=right:\(V_o\)]{}
+    ;\end{circuitikz}
+\end{center}
+Slew rate: \qty{2}{\volt\per\micro\second} \\
+Signal:
+\begin{equation}
+    x(t) =
+    \begin{cases}
+        \qty{1}{\volt} & 0 \leqslant t \leqslant \qty{4}{\micro\second} \\
+        0 & \text{elsewhere}
+    \end{cases}
+\end{equation}
+We can define the node equations
+\begin{align}
+    \qty{0.2}{\milli\ampere} &= \frac{V^- + \qty{0.1}{\volt} - V_o}{\qty{2}{\kilo\ohm}} + \frac{V^- + \qty{0.1}{\kilo\ohm}}{\qty{1}{\kilo\ohm}} \\
+    V_i + (\qty{0.1}{\milli\ampere}) (\qty{1}{\kilo\ohm}) &= V^+ \\
+    V^+ &= V^- \\
+    \implies \qty{0.2}{\milli\ampere} &= \frac{V_i + \qty{0.1}{\volt} + \qty{0.1}{\volt} - V_o}{\qty{2}{\kilo\ohm}} + \frac{V_i + \qty{0.1}{\volt} + \qty{0.1}{\volt}}{\qty{1}{\kilo\ohm}} \\
+    \qty{0.4}{\volt} &= V_i + \qty{0.2}{\volt} - V_o + 2 V_i + \qty{0.4}{\volt} \\
+  \implies V_o &= 3 V_i + \qty{0.2}{\volt}
+\end{align}
+\begin{center}
+    \resizebox{0.8\textwidth}{!}{\input{q3.pgf}}
+\end{center}
+
+\question{}
+
+\begin{align}
+    V_{cm} &= \frac{V_1 + V_2}{2} \\
+    V_d &= V_2 - V_1 \\
+    V_{out} &= A_{cm} V_{cm} + A_d V_d
+\end{align}
+We can solve for \(V_1\) and \(V_2\) in terms of \(V_{cm}\) and \(V_d\) as
+\begin{align}
+    V_1 &= V_{cm} - \frac{V_d}{2} \\
+    V_2 &= V_{cm} + \frac{V_d}{2}
+\end{align}
+Then, we can find \(V_{out}\) as
+\begin{align}
+    V_{out} &= -\cancelto{10}{\frac{R_3}{R_1}} V_1 + \left(1 + \cancelto{10}{\frac{R_3}{R_1}}\right) \left(\frac{R_4}{R_2 + R_4}\right) V_2 \\
+            &= -10 V_1 + 11 \cancelto{\frac{10}{11}}{\left(1 + \frac{R_2}{R_4}\right)^{-1}} V_2 = -10 V_1 + 10 V_2 \\
+            &= -10 \left(\cancel{V_{cm}} - \frac{V_d}{2}\right) + 10 \left(\cancel{V_{cm}} + \frac{V_d}{2}\right) = 10 V_d
+\end{align}
+So \(A_{cm} = 0\) and \(A_d = 10\).
+
+\end{document}

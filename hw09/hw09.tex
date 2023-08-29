@@ -1,0 +1,210 @@
+\documentclass{article}
+\usepackage{../cs170}
+\usepackage{physics}
+\usepackage{mhchem}
+\AtBeginDocument{\RenewCommandCopy\qty\SI}
+
+\def\title{HW 08}
+
+\begin{document}
+
+\maketitle
+
+\question{}
+
+\begin{center}
+  \begin{circuitikz}
+  \ctikzset{transistors/arrow pos=end}\draw
+  (0, 0) node[pmos, arrowmos, nocircle](pnp){}
+  (pnp.G) to[short] ++(-1, 0) to[sV, l=\(v_{s}\)] ++(0, -2) to[V, l=\(V_{SG}\), invert] ++(0, -2) node[ground]{}
+  (pnp.D) to[R, l=\(R_{D}\)] ++(0, -2) node[ground]{}
+  (pnp.D) to[short] ++(0.5, 0) node[ocirc, label=right:\(v_{o}\)]{}
+  (pnp.S) node[vcc, label=right:\(V_{DD}\)]{}
+  ;\end{circuitikz}
+\end{center}
+
+\begin{subparts}
+  \item
+  We have that \(V_{SG} - |V_{TP}| = V_{0}\) and that \(\mu_{0} C_{ox} \frac{W}{L} = k\).
+  For the PMOS to be in saturation mode, we want
+  \begin{align}
+    V_{SD} \leqslant V_{0} &= V_{DD} - I_{D} R_{D} \\
+    \implies R_{D} = \frac{V_{DD} - V_{0}}{I_{D}} &= \frac{2 (V_{DD} - V_{0})}{k V_{0}^{2}}
+  \end{align}
+  \item
+  Converting to an NMOS common-source amplifier, the small-signal equivalent is
+  \begin{center}
+    \begin{circuitikz}\draw
+      (0, 0) node[circ, label=above:\(G\)]{} to[short] ++(1, 0) to[open, v=\(v_{gs}\)] ++(0, -2) to[short] ++(4, 0) coordinate(ro) to[cI, l={\(g_{m} v_{gs}\)}, invert] ++(0, 2) to[short] ++(2, 0) to[R, l=\(R_{D}\)] ++(2, 0) node[circ, label=right:\(D\)]{} node[ground]{}
+      (1, -2) to[short] ++(-1, 0) node[circ, label=left:\(S\)]{} node[ground]{}
+      (ro) to[short] ++(2, 0) to[R, l=\(r_{o}\)] ++(0, 2) to[short] ++(0, 1) node[ocirc, label=above:\(v_{o}\)]{}
+      (0, 0) to[short] ++(-2, 0) to[sV, l=\(v_{s}\)] ++(0, -2) node[ground]{}
+    ;\end{circuitikz}
+  \end{center}
+  We then have
+  \begin{align}
+    g_{m} v_{s} &= \frac{-v_{o}}{r_{o} \parallel R_{D}} \\
+    g_{m} (r_{0} \parallel R_{D}) v_{s} &= -v_{0} \\
+    \implies A = \frac{v_{o}}{v_{s}} &= -g_{m} \frac{r_{o} R_{D}}{r_{0} + R_{D}}
+  \end{align}
+\end{subparts}
+
+\question{}
+
+\begin{center}
+  \begin{circuitikz}
+    \ctikzset{transistors/arrow pos=end}\draw
+    (0, 0) node[nmos, arrowmos](npn){}
+    (npn.S) node[ground]{}
+    (npn.G) to[R, l=\(R_{s}\)] ++(-2, 0) to[sV, l=\(v_{in}\)] ++(0, -2) to[V, l=\(V_{bias}\)] ++(0, -2) node[ground]{}
+    (npn.D) to[R, l=\(R_{L}\)] ++(0, 2) node[vcc, label=right:\(V_{DD}\)]{}
+    (npn.D) to[short] ++(2, 0) to[C, l=\(C_{L}\), v=\(V_{out}\)] ++(0, -2) node[ground]{}
+  ;\end{circuitikz}
+\end{center}
+\begin{align}
+  I_{DS} &= k (V_{GS} - V_{TH})^{2} \\
+  V_{TH} &= \qty{0.65}{\volt} \\
+  k &= \qty{20}{\milli\ampere\per\volt\squared}
+\end{align}
+
+\begin{subparts}
+  \item
+  \begin{align}
+    V_{DD} &= \qty{1.8}{\volt} \\
+    R_{s} &= \qty{10}{\kilo\ohm} \\
+    R_{L} &= \qty{1}{\kilo\ohm} \\
+    C_{L} &= \qty{1}{\pico\farad} \\
+    V_{bias} &= \qty{0.85}{\volt}
+  \end{align}
+  At the DC operating point, we have \(v_{s} = 0\), so we have
+  \begin{align}
+    V_{GS} &= V_{bias} = \qty{0.85}{\volt} \\
+    I_{DS} &= k (V_{bias} - \qty{0.65}{\volt})^{2} = \qty{0.8}{\milli\ampere} \\
+    V_{out} &= V_{DD} - I_{DS} R_{L} = \qty{1}{\volt}
+  \end{align}
+  \item
+  \begin{align}
+    g_{m} = \pdv{I_{DS}}{V_{GS}} = 2k (V_{GS} - V_{TH}) = \qty{8}{\milli\siemens}
+  \end{align}
+  \item
+  The small-signal model of the circuit is
+  \begin{center}
+    \begin{circuitikz}\draw
+      (0, 0) node[circ, label=above:\(G\)]{}  to[open, v=\(v_{gs}\)] ++(0, -2) to[short] ++(2, 0) coordinate(ro) to[cI, l={\(g_{m} v_{gs}\)}, invert] ++(0, 2) to[short] ++(2, 0) coordinate(point) to[short] ++(3, 0) node[ocirc, label=right:\(v_{out}\)]{}
+      (point) to[R, l=\(R_{L}\)] ++(0, -2) node[ground]{}
+      (point) to[short] ++(2, 0) to[C, l=\(C_{L}\)] ++(0, -2) node[ground]{}
+      (0, -2) node[circ, label=left:\(S\)]{} node[ground]{} to[short] ++(2, 0)
+      (0, 0) to[R, l=\(R_{S}\)] ++(-2, 0) to[sV, l=\(v_{in}\)] ++(0, -2) node[ground]{}
+    ;\end{circuitikz}
+  \end{center}
+  The transfer function is
+  \begin{align}
+    g_{m} v_{in} + \frac{v_{out}}{R_{L}} + sC_{L} v_{out} &= 0 \\
+    g_{m} v_{in} &= -v_{out} \left(\frac{1}{R_{L}} + sC_{L}\right) \\
+    \implies \frac{v_{out}}{v_{in}} &= -\frac{g_{m} R_{L}}{1 + s R_{L} C_{L}}
+  \end{align}
+  \item
+  \begin{align}
+    \lim_{\omega \to 0} |H(j \omega)| &= g_{m} R_{L} = 8 \\
+    |H(j \omega)| &= \frac{g_{m} R_{L}}{\sqrt{1 + (R_{L} C_{L})^{2}}} \\
+    \implies \omega_{c} = \frac{g_{m} \cancel{R_{L}}}{2\pi \cancel{R_{L}} C_{L}} &= \qty{1.27}{\giga\hertz}
+  \end{align}
+\end{subparts}
+
+\question{}
+
+\begin{center}
+\begin{circuitikz}
+    \ctikzset{transistors/arrow pos=end}\draw
+    (0, 0) node[nmos, arrowmos](npn){}
+    (npn.G) to[R, l_=\(R_{2}\)] ++(0, -2) node[ground](gnd){}
+    (npn.S) to[short] (npn.S |- gnd) node[ground]{}
+    (npn.D) to[R, l=\(R_{3}\)] ++(0, 2) node[vcc, label=west:\(V_{DD}\)](vdd){}
+    (npn.G) to[short] (npn.G |- npn.D) to[R, l=\(R_{1}\)] ++(0, 2) to[short] (vdd)
+;\end{circuitikz}
+\end{center}
+\begin{align}
+  V_{DD} &= \qty{3.3}{\volt} \\
+  R_{1} &= \qty{2.3}{\kilo\ohm} \\
+  R_{2} &= \qty{1.2}{\kilo\ohm} \\
+  R_{3} &= \qty{1.2}{\kilo\ohm} \\
+  V_{TH} &= \qty{0.5}{\volt} \\
+  \lambda &= \qty{0}{\per\volt} \\
+  \mu_{n} C_{ox} &= \qty{2e-4}{\ampere\volt\squared} \\
+  \frac{W}{L} &= 20 \\
+  L &= \qty{0.5}{\micro\meter}
+\end{align}
+
+\begin{subparts}
+  \item
+  The gate voltage forms a resistive divider, so we have \(V_{GS} = \qty{1.13}{\volt}\).
+  Since \(V_{GS} > V_{TH}\), the NMOS is either in the linear/triode or saturation region.
+  We can test the saturation condition for an NMOS:
+  \begin{align}
+    V_{DS} = V_{DD} - I_{D} R_{D} &\geqslant V_{GS} - V_{TH} \\
+    \implies R_{D} \leqslant \frac{V_{DD} + V_{TH} - V_{GS}}{I_{D}} &= \frac{2 (V_{DD} + V_{TH} - V_{GS})}{\mu_{n} C_{ox} \frac{W}{L} (V_{GS} - V_{TH})^{2}} = \qty{3.3}{\kilo\ohm} > R_{3}
+  \end{align}
+  Since the condition is satisfied, the NMOS is in saturation mode.
+  Thus, \(V_{DS} = V_{DD} - I_{D} R_{D} = \qty{2.34}{\volt}\).
+  This confirms the operating region.
+  \item
+  Since \(\lambda = \qty{0}{\per\volt}\), there is no channel-length modulation, so \(r_{o} = \infty\).
+  The small-signal model is
+  \begin{center}
+    \begin{circuitikz}\draw
+      (0, 0) node[circ, label=above:\(G\)](g){}  to[open, v=\(v_{gs}\)] ++(0, -2) to[short] ++(2, 0) to[cI, l={\(g_{m} v_{gs}\)}, invert] ++(0, 2) to[short] ++(2, 0) to[R, l=\(R_{3}\)] ++(0, -2) node[ground]{}
+      (g)++(0, -2) node[circ, label=left:\(S\)]{} node[ground]{} to[short] ++(2, 0)
+      (g) to[short] ++(-1, 0) coordinate(vgs) to[short] ++(-2, 0) to[R, l_=\(R_{1}\)] ++(0, -2) node[ground]{}
+      (vgs) to[R, l_=\(R_{2}\)] ++(0, -2) node[ground]{}
+    ;\end{circuitikz}
+  \end{center}
+  We can find \(g_{m}\) as
+  \begin{equation}
+    g_{m} = \pdv{I_{D}}{V_{DS}} = \mu_{n} C_{ox} \frac{W}{L} (V_{GS} - V_{TH}) = \qty{2.52}{\milli\siemens}
+  \end{equation}
+  \item
+  The small-signal model is now
+  \begin{center}
+    \begin{circuitikz}\draw
+      (0, 0) node[circ, label=above:\(G\)](g){}  to[open, v=\(v_{gs}\)] ++(0, -2) to[short] ++(2, 0) to[cI, l={\(g_{m} v_{gs}\)}, invert] ++(0, 2) coordinate(vd) to[short] ++(2, 0) to[R, l=\(R_{3}\)] ++(0, -2) node[ground]{}
+      (g)++(0, -2) node[circ, label=left:\(S\)]{} node[ground]{} to[short] ++(2, 0)
+      (g) to[short] ++(-1, 0) coordinate(vgs) to[short] ++(-2, 0) to[R, l_=\(R_{1}\)] ++(0, -2) node[ground]{}
+      (vgs) to[R, l_=\(R_{2}\)] ++(0, -2) node[ground]{}
+      (vgs)++(-2, 0) to[short] ++(-2, 0) to[I, l=\(i_{in}\), invert] ++(0, -2) node[ground]{}
+      (vd)++(2, 0) to[short] ++(1, 0) node[ocirc, label=right:\(v_{out}\)]{}
+    ;\end{circuitikz}
+  \end{center}
+  We have the equation
+  \begin{equation}
+    -v_{out} = g_{m} i_{in} (R_{1} \parallel R_{2}) R_{3} \implies A = \frac{v_{out}}{i_{in}} = -g_{m} (R_{1} \parallel R_{2}) R_{3} = \qty{-2.39}{\kilo\ohm}
+  \end{equation}
+\end{subparts}
+
+\question{}
+
+\begin{align*}
+  V_{GS} &= \qty{1}{\volt} \\
+  V_{DS} &= \qty{1}{\volt} \\
+  V_{SB} &= \qty{0.2}{\volt} \\
+  V_{TN} &= \qty{0.5}{\volt} \\
+  W &= \qty{5}{\micro\meter} \\
+  L &= \qty{1}{\micro\meter} \\
+  t_{ox} &= \qty{10}{\nano\meter} \\
+  \epsilon_{ox} &= 3.9 \epsilon_{0} \\
+  L_{j} &= \qty{2}{\micro\meter} \\
+  L_{ov} &= \qty{0.05}{\micro\meter} \\
+  C_{j0} &= \qty{1}{\milli\farad\per\meter\squared} \\
+  C_{j, sw0} &= \qty{4e-10}{\farad\per\meter} \\
+  \phi_{b} &= \qty{1}{\volt} \\
+  C_{\text{fringe}} &= \qty{1}{\femto\farad}
+\end{align*}
+\begin{align}
+  C_{gs} &= \frac{2}{3} W L C_{ox} + C_{ov} = \frac{2}{3} W L \frac{\epsilon_{ox}}{t_{ox}} + L_{ov} W \frac{\epsilon_{ox}}{t_{ox}} = \qty{1.24e-14}{\farad} \\
+  C_{gd} &= C_{ov} + C_{\text{fringe}} = L_{ov} W C_{ox} + C_{\text{fringe}} = \qty{1.86e-15}{\farad} \\
+  A_{d, j} &= A_{s, j} = L_{j} W = \qty{1e-11}{\meter\squared} \\
+  P_{d, j} &= P_{s, j} = 2L_{j} + W = \qty{9}{\micro\meter} \\
+  C_{db} &= \frac{C_{j0}}{\sqrt{1 + \frac{V_{DB}}{\phi_{B}}}} A_{d, j} + \frac{C_{j, sw0}}{\sqrt{1 + \frac{V_{DB}}{\phi_{B}}}} P_{d, j} = \qty{1.01e-14}{\farad} \\
+  C_{sb} &= \frac{C_{j0}}{\sqrt{1 + \frac{V_{SB}}{\phi_{B}}}} A_{s, j} + \frac{C_{j, sw0}}{\sqrt{1 + \frac{V_{SB}}{\phi_{B}}}} P_{s, j} = \qty{1.24e-14}{\farad}
+\end{align}
+
+\end{document}

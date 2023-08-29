@@ -1,0 +1,113 @@
+\documentclass{article}
+\usepackage{../cs170}
+\usepackage{physics}
+\usepackage{mhchem}
+\AtBeginDocument{\RenewCommandCopy\qty\SI}
+
+\def\title{HW 08}
+
+\begin{document}
+
+\maketitle
+
+\question{}
+
+\input{q1-charge.pgf}
+\input{q1-cv.pgf}
+
+\question{}
+
+\begin{align}
+  T &= \qty{300}{\kelvin} \\
+  \phi_{M} &= \qty{4.5}{\electronvolt} \\
+  \epsilon_{\ce{Si}} &= 11.7\epsilon_{0} \\
+  \chi &= \qty{4.05}{\electronvolt} \\
+  E_{g} &= \qty{1.12}{\electronvolt} \\
+  n_{i} &= \qty{1e10}{\per\centi\meter\cubed} \\
+  N_{a} &= \qty{1e16}{\per\centi\meter\cubed} \\
+  \epsilon_{\text{ox}} &= 3.9\epsilon_{0} \\
+  t_{\text{ox}} &= \qty{5}{\nano\meter} \\
+\end{align}
+
+\begin{subparts}
+  \item
+  \begin{align}
+    \phi_{\ce{Si}} = \chi + \frac{kT}{q} \ln\left(\frac{N_{a}}{n_{i}}\right) + \frac{E_{g}}{2} &= \qty{4.967}{\electronvolt} \\
+    V_{fb} = \frac{\phi_{M} - \phi_{\ce{Si}}}{q} &= \qty{-0.467}{\volt}
+  \end{align}
+  \item
+  \begin{align}
+    V_{t} &= V_{fb} + \gamma \sqrt{2 |\phi_{p}|} - 2|\phi_{p}| \\
+          &= V_{fb} + \frac{t_{\text{ox}}}{\epsilon_{\text{ox}}} \sqrt{2 \epsilon_{s} q N_{a}} \sqrt{2 \frac{kT}{q} \ln\left(\frac{N_{a}}{N_{i}}\right)} + 2 \frac{kT}{q} \ln\left(\frac{N_{a}}{N_{i}}\right) \\
+    &= \qty{0.318}{\volt}
+  \end{align}
+  \item
+  \begin{equation}
+    C_{\text{acc}} = C_{\text{ox}} = \frac{\epsilon_{\text{ox}}}{t_{\text{ox}}} = \qty{6.91}{\milli\farad\per\meter\squared}
+  \end{equation}
+  \item
+  \begin{equation}
+    C_{\text{inv}} = C_{\text{ox}} = \frac{\epsilon_{\text{ox}}}{t_{\text{ox}}} = \qty{6.91}{\milli\farad\per\meter\squared}
+  \end{equation}
+  \item
+  \input{q2-ef.pgf}
+\end{subparts}
+
+\question{}
+
+\begin{align}
+  W &= \qty{50}{\micro\meter} \\
+  L &= \qty{1}{\micro\meter} \\
+  T_{\text{ox}} &= \qty{10}{\nano\meter} \\
+  \epsilon_{\text{ox}} &= 4\epsilon_{0} \\
+  \epsilon_{\ce{Si}} &= 12\epsilon_{0} \\
+  N_{a} &= \qty{1e15}{\per\centi\meter\cubed} \\
+  n_{i} &= \qty{1e10}{\per\centi\meter\cubed} \\
+  V_{fb} &= \qty{0}{\volt} \\
+  \mu_{n} &= \qty{800}{\centi\meter\squared\per\volt\per\second} = \qty{0.08}{\meter\squared\per\volt\per\second} \\
+  T &= \qty{300}{\kelvin}
+\end{align}
+
+\begin{subparts}
+  \item
+  \begin{equation}
+      V_{T} = \frac{T_{\text{ox}}}{\epsilon_{\text{ox}}} \sqrt{2 \epsilon_{s} q N_{a}} \sqrt{2 \frac{kT}{q} \ln\left(\frac{N_{a}}{N_{i}}\right)} + 2 \frac{kT}{q} \ln\left(\frac{N_{a}}{N_{i}}\right) = \qty{0.635}{\volt}
+  \end{equation}
+  \item
+  Since \(V_{GS} > V_{T}\) and \(V_{DS} < V_{GS} - V_{T}\), the MOSFET is in linear/triode mode,
+  \begin{equation}
+    I_{DS} = \frac{W}{L} \mu_{n} C_{ox} \left(V_{GS} - V_{T} - \frac{V_{DS}}{2}\right) = \qty{12.25}{\milli\ampere}
+  \end{equation}
+  \item
+  \begin{align}
+    Q_{N, S} &= C_{\text{ox}} (V_{GS} - V_{T} - \cancelto{0}{V(0)}) = \qty{4.83}{\milli\coulomb\per\meter\squared} \\
+    Q_{N, D} &= C_{\text{ox}} (V_{GS} - V_{T} - \cancelto{V_{DS}}{V(0)}) = \qty{1.29}{\milli\coulomb\per\meter\squared} \\
+  \end{align}
+  \item
+  Since \(V_{GS} > V_{T}\) and \(V_{DS} > V_{GS} - V_{T}\), the MOSFET is in saturation mode,
+  \begin{equation}
+    I_{DS} = \frac{W}{L} \frac{\mu_{n} C_{ox}}{2} (V_{GS} - V_{T})^{2} (1 + \cancelto{0}{\lambda V_{DS}}) = \qty{13.19}{\milli\ampere}
+  \end{equation}
+\end{subparts}
+
+\question{}
+
+\begin{subparts}
+  \item
+  \begin{tabular}{c|c}
+    Transistor & Mode \\
+    \hline
+    i & Linear/Triode \\
+    ii & Saturation \\
+    iii & Linear/Triode \\
+    iv & Linear/Triode \\
+    v & Saturation \\
+    vi & Cutoff
+  \end{tabular}
+  \item
+  \begin{center}
+    \includegraphics[width=0.7\textwidth]{q4-b.png}
+  \end{center}
+\end{subparts}
+
+\end{document}

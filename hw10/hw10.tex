@@ -1,0 +1,217 @@
+\documentclass{article}
+\usepackage{../cs170}
+\usepackage{physics}
+\AtBeginDocument{\RenewCommandCopy\qty\SI}
+
+\def\title{HW 10}
+
+\begin{document}
+
+\maketitle
+
+\question{}
+
+\begin{center}
+  \begin{circuitikz}
+  \ctikzset{transistors/arrow pos=end}\draw
+  (0, 0) node[pmos, arrowmos, emptycircle](pnp){}
+  (pnp.G) to[short] ++(-1, 0) to[V, l=\(V_{GP}\)] ++(0, -2) node[ground]{}
+  (pnp.D) to[R, l=\(R_{L}\)] ++(0, -2) node[ground]{}
+  (pnp.D) node[circ]{} to[short] ++(1, 0) node[ocirc, label=right:\(v_{o}\)]{}
+  (pnp.S) to[R, l=\(R_{S}\)] ++(0, 2) node[vcc, label=above right:\(V_{DD}\)]{}
+  (pnp.S) node[circ]{} to[short] ++(1, 0) to[I, l_=\(i_{s}\), invert] ++(0, 2) to[short] ++(-1, 0) node[circ]{}
+  ;\end{circuitikz}
+\end{center}
+
+\begin{subparts}
+  \item This is a \emph{common-gate} amplifier.
+  \item The small-signal model is
+  \begin{center}
+    \begin{circuitikz}\draw
+      (0, 0) node[circ, label=above:\(G\)](g){}  to[open, v=\(v_{gs}\)] ++(0, -2) to[short] ++(4, 0) to[cI, l={\(g_{m} v_{gs}\)}, invert] ++(0, 2) to[short] ++(2, 0) coordinate(vd) to[R, l=\(R_{L}\)] ++(0, -2) node[ground]{}
+      (g)++(0, -2) node[circ, label=left:\(S\), label=below:\(v_{out}\)]{} to[short] ++(2, 0) to[R, l=\(R_{S}\)] ++(0, -2) node[ground]{}
+      (g)++(4, -2) to[I, l=\(i_{S}\), invert] ++(0, -2) node[ground]{}
+      (g) to[short] ++(-1, 0) to[short] ++(0, -2) node[ground]{}
+      (vd) to[short] ++(1, 0) node[ocirc, label=right:\(v_{out}\)]{}
+    ;\end{circuitikz}
+  \end{center}
+  The node equations governing the circuit are
+  \begin{align}
+    g_{m} (-v_{S}) + i_{s} &= \frac{v_{s}}{R_{S}} \\
+    \frac{v_{out}}{R_{L}} + g_{m} (-v_{S}) &= 0 \\
+    \implies v_{S} &= \frac{i_{S}}{\frac{1}{R_{S}} + g_{m}} \\
+    \implies \frac{v_{out}}{i_{S}} &= \frac{g_{m} R_{L}}{\frac{1}{R_{S}} + g_{m}}
+  \end{align}
+  \item
+  \begin{align}
+    V_{GP} &= \qty{0}{\volt} \\
+    R_{S} &= \qty{2}{\kilo\ohm} \\
+    V_{DD} &= \qty{12}{\volt} \\
+    k_{p} &= \qty{1}{\milli\ampere\per\volt} \\
+    V_{TP} &= \qty{-3}{\volt}
+  \end{align}
+  To maximize the small-signal gain, we would want \(R_{L}\) to be as large as possible while remaining in the saturation region.
+  In order to remain in the saturation region, we want
+  \begin{align}
+    V_{SD} &\geqslant V_{DD} - I_{DS} R_{S} - |V_{TP}| \\
+    \cancel{V_{DD} - I_{DS} R_{S}} - I_{DS} R_{L} &\geqslant \cancel{V_{DD} - I_{DS} R_{S}} - |V_{TP}| \\
+    \implies R_{L} &\leqslant \frac{|V_{TP}|}{I_{DS}}
+  \end{align}
+  The current given the MOSFET parameters is
+  \begin{align}
+    I_{DS} &= \frac{k_{p}}{2} (v_{S} - |V_{TP}|)^{2} \\
+           &= \frac{k_{p}}{2} (v_{DD} - I_{DS} R_{S} - |V_{TP}|)^{2} \\
+    \implies I_{DS} &= \qty{3.23}{\milli\ampere}, \qty{6.27}{\milli\ampere}
+  \end{align}
+  Picking the smaller value of \(I_{DS}\), we get \(R_{L} = \qty{928.8}{\ohm}\).
+\end{subparts}
+
+\question{Impact of Body Effect on Amplifiers}
+
+\begin{center}
+  \begin{circuitikz}
+    \ctikzset{transistors/arrow pos=end}\draw
+    (0, 0) node[nmos, bulk, arrowmos](npn){}
+    (npn.S) node[ground]{}
+    (npn.D) to[short] ++(0, 1) to[R, l=\qty{1}{\kilo\ohm}] ++(0, 2) coordinate(vdd) node[vcc, label=right:\qty{5}{\volt}]{}
+    (npn.D)++(0, 1) node[circ]{} to[short] ++(1, 0) node[ocirc, label=right:\(v_{o}\)]{}
+    (npn.G) to[short] ++(-1, 0) coordinate(vg) to[R, l=\qty{2}{\kilo\ohm}] (vg |- vdd) node[vcc, label=left:\qty{5}{\volt}]{}
+    (vg) to[R, l=\qty{3}{\kilo\ohm}] ++(0, -2) node[ground]{}
+    (vg) to[C, l=\(C_{big}\)] ++(-2, 0) to[sV, l=\(v_{i}\)] ++(0, -2) node[ground]{}
+    (npn.bulk) to[short] ++(1, 0) node[ocirc, label=right:\(V_{B}\)]{}
+  ;\end{circuitikz}
+  \begin{circuitikz}
+    \ctikzset{transistors/arrow pos=end}\draw
+    (0, 0) node[nmos, bulk, arrowmos](npn){}
+    (npn.S) node[ground]{}
+    (npn.D) to[short] ++(0, 1) to[R, l=\qty{1}{\kilo\ohm}] ++(0, 2) coordinate(vdd) node[vcc, label=right:\qty{5}{\volt}]{}
+    (npn.D)++(0, 1) node[circ]{} to[short] ++(1, 0) node[ocirc, label=right:\(v_{o}\)]{}
+    (npn.G) to[short] ++(-1, 0) coordinate(vg) to[R, l=\qty{2}{\kilo\ohm}] (vg |- vdd) node[vcc, label=left:\qty{5}{\volt}]{}
+    (vg) to[R, l=\qty{3}{\kilo\ohm}] ++(0, -2) node[ground]{}
+    (npn.bulk) to[short] ++(1, 0) to[C, l=\(C_{big}\)] ++(2, 0) to[sV, l=\(v_{i}\)] ++(0, -2) node[ground]{}
+    (npn.bulk)++(1, 0) to[R, l=\qty{1.2}{\kilo\ohm}] ++(0, -2) to[V, l=\(V_{B}\)] ++(0, -2) node[ground]{}
+  ;\end{circuitikz}
+\end{center}
+\begin{align}
+  V_{TN} &= \qty{1}{\volt} \\
+  k_{n} &= \qty{2}{\milli\ampere\per\volt} \\
+  \lambda &= \qty{0}{\per\volt} \\
+  \gamma &= \qty{0.5}{\volt\tothe{1/2}} \\
+  \phi_{p} &= \qty{-200}{\milli\volt} \\
+  V_{T} &= V_{T0} + \gamma \left(\sqrt{V_{SB} - 2 \phi_{p}} - \sqrt{-2\phi_{p}}\right)
+\end{align}
+
+\begin{subparts}
+  \item Amplifier A is a \emph{common-source} amplifier, and amplifier B is a \emph{common-gate} amplifier.
+  \item
+  The small-signal model for both amplifiers when we reduce \(C_{big}\) to a short-circuit is
+  \begin{center}
+    \begin{circuitikz}\draw
+      (0, 0) node[ocirc, label=left:\(S\)]{} to[short] ++(2, 0) coordinate(vs) to[short] ++(2, 0) to[cI, l={\(g_{m} v_{gs}\)}, invert] ++(0, 2) coordinate(vd)  to[short] ++(5, 0) node[ocirc, label=right: \(v_{o}\)]{}
+      (vd)++(2, 0) to[cI, l={\(g_{mb} v_{bs}\)}] ++(0, -2) node[ground]{} to[short] (vs)
+      (vd)++(4, 0) to[R, l=\qty{1}{\kilo\ohm}] ++(0, -2) node[ground]{}
+      (vs) to[open, v<=\(v_{bs}\)] ++(0, -2) node[circ, label=right:\(V_{B}\)]{} node[ground]{} to[short] ++(-2, 0) node[ocirc, label=left:\(B\)]{}
+      (vs) to[open, v<=\(v_{gs}\)] ++(0, 2) to[short] ++(-2, 0) coordinate(vg) node[circ, label=above:\(G\)]{} to[short] ++(-5, 0) to[sV, l=\(v_{i}\)] ++(0, -2) node[ground]{}
+      (vg)++(-1, 0) to[R, l=\qty{3}{\kilo\ohm}] ++(0, -2) node[ground]{}
+      (vg)++(-3, 0) to[R, l=\qty{2}{\kilo\ohm}] ++(0, -2) node[ground]{}
+    ;\end{circuitikz}
+    \begin{circuitikz}\draw
+      (0, 0) node[ocirc, label=left:\(S\)]{} to[short] ++(2, 0) coordinate(vs) to[short] ++(2, 0) to[cI, l={\(g_{m} v_{gs}\)}, invert] ++(0, 2) coordinate(vd)  to[short] ++(5, 0) node[ocirc, label=right: \(v_{o}\)]{}
+      (vd)++(2, 0) to[cI, l={\(g_{mb} v_{bs}\)}] ++(0, -2) node[ground]{} to[short] (vs)
+      (vd)++(4, 0) to[R, l=\qty{1}{\kilo\ohm}] ++(0, -2) node[ground]{}
+      (vs) to[open, v<=\(v_{bs}\)] ++(0, -2) coordinate(vb) to[short] ++(-2, 0) node[ocirc, label=left:\(B\)]{}
+      (vb) to[short] ++(2, 0) to[sV, l=\(v_{s}\)] ++(0, -4) node[ground]{}
+      (vs) to[open, v<=\(v_{gs}\)] ++(0, 2) to[short] ++(-2, 0) coordinate(vg) node[circ, label=above:\(G\)]{} to[short] ++(-3, 0)
+      (vg)++(-1, 0) to[R, l=\qty{3}{\kilo\ohm}] ++(0, -2) node[ground]{}
+      (vg)++(-3, 0) to[R, l=\qty{2}{\kilo\ohm}] ++(0, -2) node[ground]{}
+      (vb) to[R, l=\qty{1.2}{\kilo\ohm}] ++(0, -2) to[V, l=\(V_{B}\)] ++(0, -2) node[ground]{}
+    ;\end{circuitikz}
+  \end{center}
+  Analyzing amplifier A,
+  \begin{equation}
+    g_{m} v_{i} + \frac{v_{o}}{\qty{1}{\kilo\ohm}} = 0 \implies \frac{v_{0}}{v_{i}} = -g_{m} (\qty{1}{\kilo\ohm})
+  \end{equation}
+  Calulating \(g_{m}\),
+  \begin{align}
+    g_{m} &= k_{n} \left(v_{gs} - \left(V_{T0} + \gamma \left(\sqrt{V_{SB} - 2 \phi_{p}} - \sqrt{-2\phi_{p}}\right)\right)\right) = k_{n} \left(V_{g} - \qty{1.27}{\volt}\right) = \qty{3.45}{\milli\siemens}
+  \end{align}
+  This means that our gain is \num{-3.45}. \\
+  For amplifier B,
+  \begin{equation}
+    g_{mb} v_{s} + \frac{v_{o}}{\qty{1}{\kilo\ohm}} = 0 \implies \frac{v_{o}}{v_{i}} = -g_{mb} (\qty{1}{\kilo\ohm})
+  \end{equation}
+  Calculating \(g_{mb}\),
+  \begin{align}
+    g_{mb} &= \frac{\gamma g_{m}}{2 \sqrt{-v_{bs} - 2\phi_{p}}} \\
+    g_{m} &= \qty{3.45}{\milli\siemens} \\
+    \implies g_{mb} &= \qty{7.29e-4}{\siemens}
+  \end{align}
+  This means that our gain is \num{-0.729}.
+  \item In amplifier A, an increased \(V_{B}\) would decrease \(V_{SB}\), which would decrease \(v_{T}\), which would increase \(g_{m}\), which would \emph{increase} our absolute gain.
+  In amplifier B, an increased \(V_{B}\) would decrease \(V_{SB}\), which would increase \(g_{mb}\), which would \emph{increase} our absolute gain.
+\end{subparts}
+
+\question{}
+
+\begin{center}
+  \begin{circuitikz}
+    \ctikzset{transistors/arrow pos=end}\draw
+    (0, 0) node[nmos, arrowmos](npn){}
+    (npn.G) to[R, l=\(R_{sig}\)] ++(-2, 0) to[sV, l=\(v_{sig}\)] ++(0, -2) node[ground]{}
+    (npn.D) to[short] ++(1, 0) node[ground]{}
+    (npn.S) to[short] ++(2, 0) to[short] ++(1, 0) node[ocirc, label=\(v_{out}\)]{}
+    (npn.S)++(2, 0) to[R, l=\(R_{L}\)] ++(0, -2) node[ground]{}
+  ;\end{circuitikz}
+\end{center}
+\begin{align}
+  \mu_{n} C_{ox} &= \qty{0.5}{\milli\ampere\per\volt\squared} \\
+  V_{GS} - V_{T} &= \qty{0.2}{\volt} \\
+\end{align}
+The output resistance of a source follower is
+\begin{align}
+  R_{out} \approx \frac{1}{g_{m}} \implies g_{m} &= \mu_{n} C_{ox} \frac{W}{L} (V_{GS} - V_{T}) = \qty{3.33}{\milli\siemens} \\
+  \implies \frac{W}{L} &= \frac{\qty{3.33}{\milli\siemens}}{\mu_{n} C_{ox} (V_{GS} - V_{T})} = \num{33.33}
+\end{align}
+The DC bias current is
+\begin{equation}
+  I_{D} = \frac{\mu_{n} C_{ox}}{2} \frac{W}{L} (V_{GS} - V_{T})^{2} = \qty{33.33}{\micro\ampere}
+\end{equation}
+The range of gains based on \(R_{L}\) is
+\begin{equation}
+  \frac{v_{out}}{v_{sig}} = \eval{\frac{g_{m}}{\frac{1}{R_{L}} + g_{m}}}_{\qty{1}{\kilo\ohm}}^{\qty{10}{\kilo\ohm}} = [0.77, 0.97]
+\end{equation}
+
+\question{}
+
+\begin{equation}
+  g_{m} = \qty{10}{\milli\ampere\per\volt}
+\end{equation}
+\begin{subparts}
+  \item
+  For the source follower, the gain and output resistance are
+  \begin{align}
+    \frac{v_{o}}{v_{i}} &= \frac{g_{m}}{\frac{1}{R_{L}} + g_{m}} = \num{0.99} \\
+    R_{o} &= \frac{1}{g_{m}} = \qty{100}{\ohm}
+  \end{align}
+  \item
+  Analyzing the small-signal model of a common-gate amplifier,
+  \begin{center}
+    \begin{circuitikz}\draw
+      (0, 0) coordinate(vg) node[ocirc]{} to[open, v=\(v_{gs}\)] ++(0, -2) coordinate(vs) node[ocirc]{} to[short] ++(5, 0) to[cI, l={\(g_{m} v_{gs}\)}, invert] ++(0, 2) coordinate(vd) to[short] ++(5, 0) node[ocirc, label=right:\(v_{o}\)]{}
+      (vd)++(2, 0) to[R, l=\qty{5}{\kilo\ohm}] ++(0, -2) node[ground]{}
+      (vd)++(4, 0) to[R, l=\qty{2}{\kilo\ohm}] ++(0, -2) node[ground]{}
+      (vg) to[short] ++(-1, 0) node[ground]{}
+      (vs)++(2, 0) to[R, l=\qty{10}{\kilo\ohm}] ++(0, -2) node[ground]{}
+      (vs)++(4, 0) to[I, l=\(i_{s}\), invert] ++(0, -2) node[ground]{}
+    ;\end{circuitikz}
+  \end{center}
+  We can find the gain as
+  \begin{align}
+    \frac{v_{o}}{\qty{5}{\kilo\ohm}} + \frac{v_{o}}{\qty{2}{\kilo\ohm}} + g_{m} (-V_{s}) &= 0 \\
+    \frac{V_{s}}{\qty{10}{\kilo\ohm}} &= i_{s} + g_{m} (-V_{s}) \implies V_{s} = \frac{i_{s}}{\frac{1}{\qty{10}{\kilo\ohm}} + g_{m}} \\
+    \implies \frac{v_{o}}{i_{s}} &= \left(\frac{1}{\qty{10}{\kilo\ohm}} + g_{m}\right) \frac{g_{m} (\qty{10}{\kilo\ohm})}{\frac{1}{\qty{5}{\kilo\ohm}} + \frac{1}{\qty{2}{\kilo\ohm}}} = \qty{1.44}{\kilo\ohm}
+  \end{align}
+  For the common-gate amplifier, the input resistance is \(R_{i} = \frac{1}{g_{m}} = \qty{100}{\ohm}\).
+\end{subparts}
+
+\end{document}

@@ -1,0 +1,104 @@
+#+title: EE 105 Lab 03
+#+author: Bryan Ngo
+#+date: <2023-03-02 Thu>
+
+#+latex_header: \usepackage{eecstex}
+#+latex_header: \usepackage{float}
+#+latex_header: \usepackage[export]{adjustbox}
+#+bind: org-latex-images-centered nil
+#+bind: org-latex-image-default-width "8cm"
+
+* DC Simulation Values
+
+#+caption: DC simulation parameters.
+#+name: fig:dc_sim
+#+attr_latex: :width 0.7\textwidth :center t :placement [H]
+[[./dc_sim.png]]
+
+* Formatted Plot for AC Magnitude Response
+
+#+caption: AC magnitude plot.
+#+name: fig:ac_sim
+#+attr_latex: :width 0.7\textwidth :center t :placement [H]
+[[./ac_sim.png]]
+
+* Parametric Analysis varying the RC Capacitance
+
+#+caption: All three plots.
+#+name: fig:param_rc
+#+attr_latex: :width 0.7\textwidth :center t :placement [H]
+[[./param_rc.png]]
+
+#+caption: Parametric sweep AC response.
+#+name: fig:param_ac_resp
+#+attr_latex: :width 0.7\textwidth :center t :placement [H]
+[[./param_ac_resp.png]]
+
+#+caption: Parametric sweep at \qty{1}{\kilo\hertz}.
+#+name: fig:param_1k
+#+attr_latex: :width 0.7\textwidth :center t :placement [H]
+[[./param_1k.png]]
+
+#+caption: Parametric sweep at \qty{10}{\kilo\hertz}.
+#+name: fig:param_10k
+#+attr_latex: :width 0.7\textwidth :center t :placement [H]
+[[./param_10k.png]]
+
+\begin{align}
+    |H(f)| &= \frac{1}{\sqrt{1 + (2\pi f RC)^2}} \\
+    \angle H(f) &= \tan^{-1}(-2\pi f RC) \\
+    |H(f)||_{C = \qty{10}{\nano\farad}} &= \num{0.85} \\
+    |H(f)||_{C = \qty{20}{\nano\farad}} &= \num{0.62} \\
+    \angle H(f)|_{C = \qty{10}{\nano\farad}} &= \ang{32.1} \\
+    \angle H(f)|_{C = \qty{20}{\nano\farad}} &= \ang{51.5}
+\end{align}
+
+* Transient Simulation
+
+#+caption: Transient RC simulation.
+#+name: fig:trans_rc
+#+attr_latex: :width 0.7\textwidth :center t :placement [H]
+[[./trans_rc.png]]
+
+* LM741 Simulation
+
+#+begin_table
+#+latex: \adjustbox{max width=\linewidth}{
+#+attr_latex: :center t
+|--------------------------+--------------------------------------+-------------------------------------------------+-----------------------------------------------+------------------------------------------------------+-----------------------------------------|
+| \(R\) [\unit{\kilo\ohm}] | Input Frequency [\unit{\kilo\hertz}] | Hand-Calculated Output Amplitude [\unit{\volt}] | AC Simulation Output Amplitude [\unit{\volt}] | Transient Simulation Output Amplitude [\unit{\volt}] | Circuit Output Amplitude [\unit{\volt}] |
+|--------------------------+--------------------------------------+-------------------------------------------------+-----------------------------------------------+------------------------------------------------------+-----------------------------------------|
+| \num{5}                  | \num{1}                              | \num{6}                                         | \num{5.999}                                   | \num{6}                                              | \num{6.55}                              |
+| \num{10}                 | \num{1}                              | \num{11}                                        | \num{10.999}                                  | \num{11}                                             | \num{11.55}                             |
+| \num{20}                 | \num{1}                              | \num{21}                                        | \num{20.994}                                  | \num{14}                                             | \num{14.3}                              |
+| \num{5}                  | \num{10}                             | \num{6}                                         | \num{5.990}                                   | \num{6}                                              | \num{6.55}                              |
+| \num{10}                 | \num{10}                             | \num{11}                                        | \num{10.937}                                  | \num{8.6}                                            | \num{11.5}                              |
+| \num{20}                 | \num{10}                             | \num{21}                                        | \num{20.560}                                  | \num{8.8}                                            | \num{14.3}                              |
+#+latex: }
+#+end_table
+
+#+caption: Output amplitudes for \(R = \qty{5}{\kilo\ohm}\). Left: \qty{1}{\kilo\hertz}. Right: \qty{10}{\kilo\hertz}.
+#+name: fig:5k
+#+attr_latex: :placement [H]
+| [[./5k_1k.png]] | [[./5k_10k.png]] |
+
+#+caption: Output amplitudes for \(R = \qty{10}{\kilo\ohm}\). Left: \qty{1}{\kilo\hertz}. Right: \qty{10}{\kilo\hertz}.
+#+name: fig:10k
+#+attr_latex: :placement [H]
+| [[./10k_1k.png]] | [[./10k_10k.png]] |
+
+#+caption: Output amplitudes for \(R = \qty{20}{\kilo\ohm}\). Left: \qty{1}{\kilo\hertz}. Right: \qty{10}{\kilo\hertz}.
+#+name: fig:20k
+#+attr_latex: :placement [H]
+| [[./20k_1k.png]] | [[./20k_10k.png]] |
+
+At \qty{1}{\kilo\hertz}, the AC simulation had the greatest error.
+It does not take into account the finite supply voltage.
+
+At \qty{10}{\kilo\hertz}, the AC simulation had the greatest error.
+It does not take into account the slewing of the input signal.
+
+In hand calculation, we assume an ideal op-amp, such as infinite gain and supply voltage, as well as a non-dependence on frequency.
+In AC simulation, we still maintain infinite supply voltage, but now we have a finite gain and frequency dependence.
+In transient simulation, we take into account slewing as well as finite supply voltage.
+This suggests that transient simulation is the closest to reality.

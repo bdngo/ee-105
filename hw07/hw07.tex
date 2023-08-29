@@ -1,0 +1,115 @@
+\documentclass{article}
+\usepackage{../cs170}
+\usepackage{physics}
+\AtBeginDocument{\RenewCommandCopy\qty\SI}
+
+\def\title{HW 07}
+
+\begin{document}
+
+\maketitle
+
+\question{}
+
+\begin{align}
+  L &= \qty{1}{\micro\meter} \\
+  N_{a} &= \qty{4e10}{\per\centi\meter\cubed} \\
+  T &= \qty{300}{\kelvin} \\
+  n_{i} &= \qty{1e10}{\per\centi\meter\cubed} \\
+  \mu_{n} &= \qty{1400}{\centi\meter\squared\per\volt\per\second} \\
+  \mu_{p} &= \qty{500}{\centi\meter\squared\per\volt\per\second}
+\end{align}
+
+\begin{subparts}
+  \item This semiconductor is p-type.
+  \item % \(n_{0} = \frac{n_{i}^{2}}{N_{a}} = \num{2.5e9}\), \(p_{0} = N_{a} = \num{4e10}\)
+  \begin{align}
+    p_{0} - n_{0} + \cancelto{0}{N_{d}} - N_{a} &\approx 0 \\
+    p_{0} - \frac{n_{i}^{2}}{p_{0}} - N_{a} &\approx 0 \\
+    p_{0}^{2} - N_{a} p_{0} - n_{i}^{2} &\approx 0 \\
+    \implies p_{0} = \frac{N_{a}}{2} + \sqrt{\left(\frac{N_{a}}{2}\right)^{2} + n_{i}^{2}} &= \qty{4.24e10}{\per\centi\meter\cubed} \\
+    n_{0} = \frac{n_{i}^{2}}{p_{0}} &= \qty{2.36e9}{\per\centi\meter\cubed}
+  \end{align}
+  \item \(\rho = (q (n_{0} \mu_{n} + p_{0} \mu_{p}))^{-1} = \qty{2.55e5}{\ohm\centi\meter} = \qty{2.55e3}{\ohm\meter}\)
+  \item \(J = \frac{1}{\rho} \frac{V}{L} = \qty{3.92e2}{\ampere\per\meter\squared}\)
+  \item There are more holes, so the electron mean free time should decrease.
+  Since \(J \propto \rho^{-1} \propto \mu \propto \tau\), the current density should decrease.
+  \item We now have \(N_{d} = \qty{1e11}{\per\centi\meter\cubed}\).
+  \begin{align}
+    p_{0} - n_{0} + N_{d} - N_{a} &\approx 0 \\
+    \frac{n_{i}^{2}}{n_{0}} - n_{0} + N_{d} - N_{a} &\approx 0 \\
+    n_{i}^{2} - n_{0}^{2} + (N_{d} - N_{a}) n_{0} &\approx 0 \\
+    n_{0}^{2} - (N_{d} - N_{a}) n_{0} - n_{i}^{2} &\approx 0 \\
+    \implies n_{0} = \frac{N_{d} - N_{a}}{2} + \sqrt{\left(\frac{N_{d} - N_{a}}{2}\right)^{2} + n_{i}^{2}} &= \qty{6.16e10}{\per\centi\meter\cubed} \\
+    p_{0} = \frac{n_{i}^{2}}{n_{0}} &= \qty{1.62e9}{\per\centi\meter\cubed}
+  \end{align}
+\end{subparts}
+
+\question{}
+
+\begin{align}
+  n_{i} &= \qty{1e10}{\per\centi\meter\cubed} \\
+  \frac{kT}{q} &= \qty{26}{\milli\volt} \\
+  \epsilon_{0} &= \qty{8.85}{\farad\per\meter} \\
+  \epsilon_{s} &= 11.7 \epsilon_{0}
+\end{align}
+
+\begin{subparts}
+  \item For PN junction A, we have \(N_{a} = \qty{1e16}{\per\centi\meter\cubed}\) and \(N_{d} = \qty{1e17}{\per\centi\meter\cubed}\).
+  For PN junction B, we have \(N_{a} = \qty{1e18}{\per\centi\meter\cubed}\) and \(N_{d} = \qty{1e17}{\per\centi\meter\cubed}\).
+  \begin{align}
+    \phi_{bi, A} &= \frac{kT}{q} \ln\left(\frac{N_{d} N_{a}}{n_{i}^{2}}\right) = \qty{0.78}{\volt} \\
+    \phi_{bi, B} &= \qty{0.90}{\volt}
+  \end{align}
+  \item
+  \begin{align}
+    X_{d0, A} &= \sqrt{\frac{2 \epsilon_{s} \phi_{bi, A}}{q} \left(\frac{1}{N_{a}} + \frac{1}{N_{d}}\right)} = \qty{3.33e-4}{\centi\meter} \\
+    X_{d0, B} &= \qty{1.13e-4}{\centi\meter}
+  \end{align}
+  Meaning that PN junction A has a larger depletion width.
+  \item
+  \begin{align}
+    \max_{x}\{E_{0, A}(x)\} &= -\frac{q N_{a}}{\epsilon_{s}} \sqrt{\frac{2 \epsilon_{s} \phi_{bi}}{q N_{a}} \left(\frac{N_{d}}{N_{d} + N_{a}}\right)} = - \sqrt{\frac{2 q N_{a} \phi_{bi}}{\epsilon_{s}} \left(\frac{N_{d}}{N_{d} + N_{a}}\right)} = \qty{-4.68e3}{\volt\per\centi\meter} \\
+    \max_{x}\{E_{0, B}(x)\} &= \qty{-1.59e4}{\volt\per\centi\meter}
+  \end{align}
+  Meaning that PN junction B has a higher electric field strength.
+  \item
+  \begin{align}
+    X_{d}(V_{d}) &= X_{d0} \sqrt{1 - \frac{V_{D}}{\phi_{bi}}} = \qty{1.51e-4}{\centi\meter} \\
+    C_{j} &= \frac{\epsilon_{s}}{X_{d}(V_{D})} = \qty{6.87e-5}{\farad\per\meter\squared}
+  \end{align}
+  \item Since \(N_{a} = \qty{1e20}{\per\centi\meter\cubed}\), the new built-in potential and depletion width are
+  \begin{align}
+    \phi_{bi, A} &= \qty{1.018}{\volt} \\
+    X_{d0, A} &= \sqrt{\frac{2 \epsilon_{s} \phi_{bi, A}}{q} \left(\frac{1}{N_{a}} + \frac{1}{N_{d}}\right)} = \qty{1.15e-4}{\centi\meter} \\
+    X_{d, A}(V_{D}) &= X_{d0, A} \sqrt{1 - \frac{V_{D}}{\phi_{bi}}} \\
+    C_{j0}(V_{D}) &= \frac{\epsilon_{s}}{X_{d, A}(V_{D})}
+  \end{align}
+\end{subparts}
+
+\question{}
+
+\begin{align}
+  n(x) &= \num{5e16} - \frac{\num{5e16}}{\qty{2e-4}{\centi\meter}} x \\
+  p(x) &= \frac{\num{3e16}}{\qty{2e-4}{\centi\meter}} x \\
+  D_{n} &= \qty{36}{\centi\meter\squared\per\second} \\
+  D_{p} &= \qty{12}{\centi\meter\squared\per\second}
+\end{align}
+
+\begin{subparts}
+  \item
+  \begin{equation}
+    J = q \left(D_{n} \dv{n}{x} - D_{p} \dv{p}{x}\right) = \qty{-1.73e3}{\ampere\per\centi\meter\squared}
+  \end{equation}
+  \item Since all regeneration and combination has balanced out, we have \(J = \qty{0}{\ampere\per\meter\squared}\).
+  \item
+  \begin{equation}
+    \frac{C}{A} = \frac{\epsilon}{d} \implies d = \frac{\epsilon A}{C} = \frac{3.9 \epsilon_{0}}{\qty{40}{\femto\farad\per\micro\meter\squared}} = \qty{8.63e-10}{\meter} = \qty{0.863}{\nano\meter}
+  \end{equation}
+  \item Converting the capacitance density, we have \(\qty{40}{\femto\farad\per\micro\meter\squared} = \qty{4e-2}{\farad\per\meter\squared}\).
+  \begin{equation}
+    \epsilon = d \cdot \frac{C}{A} = (\qty{1e-9}{\meter}) \cdot (\qty{4e-2}{\farad\per\meter\squared}) = \qty{4e-11}{\farad\per\meter} = \num{4.52} \epsilon_{0}
+  \end{equation}
+\end{subparts}
+
+\end{document}
